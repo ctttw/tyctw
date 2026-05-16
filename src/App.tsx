@@ -175,7 +175,7 @@ export default function App() {
       case 'txt': exportTxt(payload, regionName); break;
       case 'excel': exportExcel(payload, regionName); break;
       case 'json': exportJson(payload); break;
-      case 'print': printResults(); break;
+      case 'print': printResults(payload, regionName); break;
     }
   };
 
