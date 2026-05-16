@@ -17,10 +17,10 @@ export default function GradeLevelModal({ isOpen, onClose }: GradeLevelModalProp
       title="等級/標示 與 答對題數對照表"
       icon={<Award className="w-8 h-8 text-rose-500" />}
     >
-      <div className="flex bg-slate-100 p-1 rounded-xl border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] mb-6 flex-col sm:flex-row gap-1 sm:gap-0">
+      <div className="flex overflow-x-auto whitespace-nowrap bg-slate-100 p-1 rounded-xl border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] mb-6 gap-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <button
           onClick={() => setActiveTab('description')}
-          className={`flex-1 py-2 px-4 rounded-lg font-black text-sm transition-all ${
+          className={`flex-1 min-w-max py-2 px-4 rounded-lg font-black text-sm transition-all ${
             activeTab === 'description'
               ? 'bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]'
               : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200 border-2 border-transparent'
@@ -30,7 +30,7 @@ export default function GradeLevelModal({ isOpen, onClose }: GradeLevelModalProp
         </button>
         <button
           onClick={() => setActiveTab('115')}
-          className={`flex-1 py-2 px-4 rounded-lg font-black text-sm transition-all sm:ml-1 ${
+          className={`flex-1 min-w-max py-2 px-4 rounded-lg font-black text-sm transition-all ${
             activeTab === '115'
               ? 'bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]'
               : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200 border-2 border-transparent'
@@ -40,7 +40,7 @@ export default function GradeLevelModal({ isOpen, onClose }: GradeLevelModalProp
         </button>
         <button
           onClick={() => setActiveTab('114')}
-          className={`flex-1 py-2 px-4 rounded-lg font-black text-sm transition-all sm:ml-1 ${
+          className={`flex-1 min-w-max py-2 px-4 rounded-lg font-black text-sm transition-all ${
             activeTab === '114'
               ? 'bg-white text-slate-900 border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]'
               : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200 border-2 border-transparent'

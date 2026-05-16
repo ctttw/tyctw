@@ -32,25 +32,33 @@ export default function ComparisonModal({ isOpen, onClose, schools, onRemove, on
               <div className="absolute right-0 top-0 opacity-20 -translate-y-1/4 translate-x-1/4">
                 <List className="w-32 h-32 text-slate-900" />
               </div>
-              <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-white rounded-2xl border-4 border-slate-900 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] -rotate-3">
-                    <List className="w-6 h-6 text-slate-900" />
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between relative z-10 gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-2xl border-4 border-slate-900 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] -rotate-3">
+                      <List className="w-5 h-5 sm:w-6 sm:h-6 text-slate-900" />
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">選擇比較清單</h2>
                   </div>
-                  <h2 className="text-2xl font-black text-slate-900 tracking-tight">選擇比較清單</h2>
+                  <button 
+                    onClick={onClose} 
+                    className="sm:hidden w-10 h-10 bg-white rounded-xl border-4 border-slate-900 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:translate-y-0 active:shadow-none transition-all"
+                  >
+                    <X className="w-5 h-5 text-slate-900" />
+                  </button>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex justify-end items-center gap-3">
                   {schools.length > 0 && (
                     <button 
                       onClick={onClear} 
-                      className="px-4 py-2 bg-rose-400 text-slate-900 font-black text-sm rounded-xl border-4 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] active:translate-y-0 active:shadow-none transition-all flex items-center gap-2"
+                      className="flex-1 sm:flex-none justify-center px-4 py-2 bg-rose-400 text-slate-900 font-black text-sm rounded-xl border-4 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] active:translate-y-0 active:shadow-[0px_0px_0px_0px_rgba(15,23,42,1)] transition-all flex items-center gap-2"
                     >
                       <Trash2 className="w-4 h-4" /> <span>清空全部</span>
                     </button>
                   )}
                   <button 
                     onClick={onClose} 
-                    className="w-10 h-10 bg-white rounded-xl border-4 border-slate-900 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:bg-slate-100 hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] transition-all active:translate-y-0 active:shadow-none"
+                    className="hidden sm:flex w-10 h-10 bg-white rounded-xl border-4 border-slate-900 items-center justify-center shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:bg-slate-100 hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] transition-all active:translate-y-0 active:shadow-none"
                   >
                     <X className="w-5 h-5 text-slate-900" />
                   </button>

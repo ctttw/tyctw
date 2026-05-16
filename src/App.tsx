@@ -7,7 +7,9 @@ import {
   Library, ArrowRight, Activity, KeyRound, Info, Shield, History, ChartBar, Download, List, QrCode, Check, Menu, X, Filter, Share2, Mail
 } from 'lucide-react';
 import VocationalModal from './components/VocationalModal';
+import VocationalEncyclopediaModal from './components/VocationalEncyclopediaModal';
 import { InfoModal } from './components/InfoModals';
+import ChangelogModal from './components/ChangelogModal';
 import ComparisonModal from './components/ComparisonModal';
 import QRCodeModal from './components/QRCodeModal';
 import CyberAuthOverlay from './components/CyberAuthOverlay';
@@ -20,6 +22,7 @@ import AuthFailModal from './components/AuthFailModal';
 import RegionScoringModal from './components/RegionScoringModal';
 import SharePlatformModal from './components/SharePlatformModal';
 import RatingModal from './components/RatingModal';
+import AdvantagesModal from './components/AdvantagesModal';
 
 const gradeOptions = [
   { value: 'A++', label: 'A++ (精熟)' },
@@ -52,8 +55,9 @@ export default function App() {
   const [results, setResults] = useState<any>(null);
   
   // Modals state
-  const [activeModal, setActiveModal] = useState<'instructions' | 'disclaimer' | 'changelog' | 'gradeLevel' | 'importantDates' | 'qrcode' | 'rating' | 'authFail' | 'validationFailed' | 'export' | 'scoringMethod' | 'sharePlatform' | null>(null);
+  const [activeModal, setActiveModal] = useState<'instructions' | 'disclaimer' | 'changelog' | 'gradeLevel' | 'importantDates' | 'qrcode' | 'rating' | 'authFail' | 'validationFailed' | 'export' | 'scoringMethod' | 'sharePlatform' | 'advantages' | null>(null);
   const [isVocationalOpen, setIsVocationalOpen] = useState(false);
+  const [isEncyclopediaOpen, setIsEncyclopediaOpen] = useState(false);
   const [isRegionOpen, setIsRegionOpen] = useState(false);
   const [vocationalGroups, setVocationalGroups] = useState<string[]>(['all']);
   const [isExternalLinksOpen, setIsExternalLinksOpen] = useState(false);
@@ -63,9 +67,20 @@ export default function App() {
   const [comparisonSchools, setComparisonSchools] = useState<any[]>([]);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Custom Result Filters
+  const [resultFilterText, setResultFilterText] = useState('');
+  const [resultFilterOwnership, setResultFilterOwnership] = useState('all');
+  const [resultFilterType, setResultFilterType] = useState('all');
 
   useEffect(() => {
     setActiveModal('disclaimer');
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code') || params.get('invitationCode') || params.get('invite');
+    if (code) {
+      setFormData(prev => ({ ...prev, invitationCode: code }));
+    }
   }, []);
 
   useEffect(() => {
@@ -131,6 +146,8 @@ export default function App() {
           analysisIdentity: formData.identity
         },
         region: formData.region,
+        invitationCode: formData.invitationCode,
+        timestamp: new Date().toISOString(),
         action: 'analyzeScores'
       };
 
@@ -223,48 +240,32 @@ export default function App() {
 
       <main className="max-w-6xl mx-auto px-4 mt-32 space-y-8 relative">
         
-        <header className="py-12 md:py-20 relative">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4 md:px-0">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="bg-indigo-300 p-8 rounded-3xl border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] flex flex-col justify-between hover:-translate-y-2 hover:shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] transition-all"
-            >
-              <div className="w-16 h-16 bg-white rounded-2xl border-4 border-slate-900 flex items-center justify-center -rotate-3 mb-6 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
-                <Sparkles className="w-8 h-8 text-indigo-500" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-slate-900 mb-2">高精準模型</h2>
-                <p className="text-slate-900 font-bold leading-relaxed">全新智慧演算引擎上線，提供最高精準度的落點預測與分析結果。</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="bg-lime-300 p-8 rounded-3xl border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] flex flex-col justify-between hover:-translate-y-2 hover:shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] transition-all md:-translate-y-4"
-            >
-              <div className="w-16 h-16 bg-white rounded-2xl border-4 border-slate-900 flex items-center justify-center rotate-3 mb-6 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
-                <Activity className="w-8 h-8 text-lime-600" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-slate-900 mb-2">最佳決策引擎</h2>
-                <p className="text-slate-900 font-bold leading-relaxed">您升學規劃的最強後盾，綜整各項數據指標，成為最佳決策依據。</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-              className="bg-amber-300 p-8 rounded-3xl border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] flex flex-col justify-between hover:-translate-y-2 hover:shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] transition-all"
-            >
-              <div className="w-16 h-16 bg-white rounded-2xl border-4 border-slate-900 flex items-center justify-center -rotate-6 mb-6 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
-                <Check className="w-8 h-8 text-amber-600" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-slate-900 mb-2">個人化篩選</h2>
-                <p className="text-slate-900 font-bold leading-relaxed">輸入您的會考成績與偏好，系統即刻為您比對出最合適的理想高中。</p>
-              </div>
-            </motion.div>
+        {/* Announcement Banner */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-indigo-100 border-4 border-slate-900 rounded-2xl p-4 sm:p-6 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden"
+        >
+          <div className="absolute right-0 top-0 opacity-10 transform translate-x-4 -translate-y-4">
+            <Info className="w-32 h-32 text-indigo-900" />
           </div>
-        </header>
+          <div className="relative z-10 flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div className="w-12 h-12 bg-indigo-500 text-white rounded-xl border-2 border-slate-900 flex flex-shrink-0 items-center justify-center shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] -rotate-3">
+               <Info className="w-6 h-6" />
+            </div>
+            <div className="flex-1">
+               <h3 className="font-black text-lg text-slate-900 mb-1">系統公告</h3>
+               <p className="font-bold text-slate-700 text-sm leading-relaxed">
+                 115 學年度最新落點資料將於「公布個人序位區間」後進行全面更新。<br className="hidden md:block"/>
+                 <span className="text-indigo-800">歡迎各高中職校方、補教機構與我們聯繫，提供歷年錄取數據並申請專屬邀請碼！</span>
+               </p>
+            </div>
+            <a href="mailto:tyctw.analyze@gmail.com" className="w-full md:w-auto text-center px-6 py-3 bg-white border-2 border-slate-900 font-black text-slate-900 rounded-xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] active:translate-y-0 active:shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] transition-all">
+              聯絡我們
+            </a>
+          </div>
+        </motion.div>
 
         {errorMessage && (
           <div className="p-4 bg-red-50 text-red-700 rounded-2xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] font-bold flex items-center gap-3">
@@ -312,6 +313,16 @@ export default function App() {
                 >
                   <QrCode className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 </button>
+              </div>
+              <div className="mt-3 relative z-10 flex justify-end">
+                <a 
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSdPGrqFkGqmI8Nhu2LONgPtNtvikLjTvbQ1foyTgQnV1Sstqg/viewform?usp=send_form" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-amber-600 hover:text-amber-700 hover:underline flex items-center gap-1 active:scale-95 transition-transform"
+                >
+                  點此獲取邀請碼
+                </a>
               </div>
             </motion.section>
 
@@ -399,10 +410,19 @@ export default function App() {
                 </div>
                 {formData.schoolType === '職業類科' && (
                   <div>
-                    <label className="text-sm font-black text-slate-900 flex items-center gap-2 mb-3 mt-4">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 border border-slate-900 inline-block"></span>
-                      職業群別選擇
-                    </label>
+                    <div className="flex items-center justify-between mt-4 mb-3">
+                      <label className="text-sm font-black text-slate-900 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 border border-slate-900 inline-block"></span>
+                        職業群別選擇
+                      </label>
+                      <button 
+                        onClick={() => setIsEncyclopediaOpen(true)}
+                        className="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:underline flex items-center gap-1 active:scale-95 transition-transform"
+                      >
+                        <BookOpen className="w-3 h-3" />
+                        職群/科系深入介紹百科
+                      </button>
+                    </div>
                     <button
                       onClick={() => setIsVocationalOpen(true)}
                       className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-900 focus:outline-none transition-all font-bold text-left shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:bg-emerald-50 active:translate-y-1 active:shadow-none flex justify-between items-center"
@@ -652,13 +672,13 @@ export default function App() {
 
               <div className="lg:col-span-8 bg-white border-2 border-slate-900 rounded-3xl p-6 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] flex flex-col overflow-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-4">
-                  <div>
+                  <div className="w-full sm:w-auto">
                     <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
                       <Building2 className="w-6 h-6 text-indigo-500" /> 最適推薦志願
                     </h3>
                     <span className="text-xs font-bold text-slate-400 mt-1 block">依據系統運算排序</span>
                   </div>
-                  <div className="flex flex-wrap gap-2 relative">
+                  <div className="flex flex-wrap gap-2 relative w-full sm:w-auto">
                     <button onClick={() => setIsComparisonOpen(true)} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg border-2 border-slate-900 flex items-center gap-1 hover:-translate-y-0.5 active:translate-y-0 transition-transform shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:shadow-none">
                       <List className="w-4 h-4" /> 比較清單 ({comparisonSchools.length})
                     </button>
@@ -667,12 +687,60 @@ export default function App() {
                     </button>
                   </div>
                 </div>
+
+                {/* Filter Bar */}
+                <div className="flex flex-col sm:flex-row gap-3 mb-4 bg-slate-50 p-3 rounded-2xl border-2 border-slate-200">
+                  <div className="flex-1 relative">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input 
+                      type="text" 
+                      placeholder="搜尋學校、科別關鍵字..." 
+                      value={resultFilterText}
+                      onChange={e => setResultFilterText(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 bg-white rounded-xl border-2 border-slate-200 text-sm font-bold focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 placeholder:text-slate-400 transition-all"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <select 
+                      value={resultFilterOwnership} 
+                      onChange={e => setResultFilterOwnership(e.target.value)}
+                      className="flex-1 sm:flex-none px-3 py-2 bg-white rounded-xl border-2 border-slate-200 text-sm font-bold focus:outline-none focus:border-slate-900"
+                    >
+                      <option value="all">公私立不拘</option>
+                      <option value="公立">公立</option>
+                      <option value="私立">私立</option>
+                    </select>
+                    <select 
+                      value={resultFilterType} 
+                      onChange={e => setResultFilterType(e.target.value)}
+                      className="flex-1 sm:flex-none px-3 py-2 bg-white rounded-xl border-2 border-slate-200 text-sm font-bold focus:outline-none focus:border-slate-900"
+                    >
+                      <option value="all">科別不拘</option>
+                      <option value="普通科">public</option>
+                      <option value="職業類科">職業類科</option>
+                    </select>
+                  </div>
+                </div>
                 
-                {results.eligibleSchools && results.eligibleSchools.length > 0 ? (
-                  <div className="flex-1 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-4">
-                    {results.eligibleSchools.map((school: any, i: number) => {
-                      const isCompared = !!comparisonSchools.find(s => s.name === school.name);
+                {(() => {
+                  const filteredSchools = (results.eligibleSchools || []).filter((school: any) => {
+                    const matchText = !resultFilterText || 
+                      school.name?.includes(resultFilterText) || 
+                      school.type?.includes(resultFilterText) || 
+                      school.group?.includes(resultFilterText);
+                    const matchOwnership = resultFilterOwnership === 'all' || school.ownership === resultFilterOwnership;
+                    const matchType = resultFilterType === 'all' || 
+                      (resultFilterType === '普通科' && school.type === '普通科') || 
+                      (resultFilterType === '職業類科' && school.type !== '普通科');
+                    return matchText && matchOwnership && matchType;
+                  });
+
+                  return filteredSchools.length > 0 ? (
+                    <div className="flex-1 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-4">
+                      {filteredSchools.map((school: any, i: number) => {
+                        const isCompared = !!comparisonSchools.find(s => s.name === school.name);
+
                       
                       const userScore = results.totalPoints ? parseFloat(results.totalPoints) : 0;
                       let numDiff: number | null = null;
@@ -782,7 +850,8 @@ export default function App() {
                     <Search className="w-16 h-16 text-slate-300 mb-4" />
                     <p className="text-xl font-black text-slate-500">目前沒有符合條件的推薦學校</p>
                   </div>
-                )}
+                );
+                })()}
               </div>
             </div>
           </motion.div>
@@ -790,6 +859,10 @@ export default function App() {
       </AnimatePresence>
 
       {/* Modals Rendering */}
+      <AdvantagesModal 
+        isOpen={activeModal === 'advantages'} 
+        onClose={() => setActiveModal(null)} 
+      />
       <QRCodeModal 
         isOpen={activeModal === 'qrcode'} 
         onClose={() => setActiveModal(null)} 
@@ -801,6 +874,11 @@ export default function App() {
         onClose={() => setIsVocationalOpen(false)}
         selectedGroups={vocationalGroups}
         onChange={setVocationalGroups}
+      />
+
+      <VocationalEncyclopediaModal
+        isOpen={isEncyclopediaOpen}
+        onClose={() => setIsEncyclopediaOpen(false)}
       />
 
       <RegionModal 
@@ -911,35 +989,10 @@ export default function App() {
         </div>
       </InfoModal>
 
-      <InfoModal 
+      <ChangelogModal 
         isOpen={activeModal === 'changelog'} 
         onClose={() => setActiveModal(null)}
-        title="系統更新日誌"
-        icon={<History className="w-8 h-8 text-emerald-500" />}
-      >
-        <div className="space-y-6">
-          <div className="relative pl-6 border-l-2 border-slate-200 pb-2">
-            <div className="absolute w-4 h-4 bg-emerald-500 rounded-full -left-[9px] top-0 border-4 border-white shadow-sm" />
-            <h3 className="font-bold text-slate-800 flex items-center gap-2">版本 2.0 (New Bento Grid UI)</h3>
-            <p className="text-xs text-slate-400 font-bold mb-2">2026-05</p>
-            <ul className="text-sm text-slate-600 list-disc pl-4 space-y-1">
-              <li>全新 Bento Grid 模塊化設計介面，資訊閱讀更直覺。</li>
-              <li>新增多所學校加入比較分析清單功能（最多可加入 4 所）。</li>
-              <li>增強對各就學區最新計分規則的支援與校正。</li>
-              <li>提供多樣化資料匯出格式 (Excel, JSON, TXT)。</li>
-            </ul>
-          </div>
-          <div className="relative pl-6 border-l-2 border-slate-200 pb-2">
-            <div className="absolute w-4 h-4 bg-slate-300 rounded-full -left-[9px] top-0 border-4 border-white shadow-sm" />
-            <h3 className="font-bold text-slate-600 flex items-center gap-2">版本 1.5 </h3>
-            <p className="text-xs text-slate-400 font-bold mb-2">2024-12</p>
-            <ul className="text-sm text-slate-500 list-disc pl-4 space-y-1">
-              <li>增強匯出功能穩定性與 Excel 相容度。</li>
-              <li>更新 113 年度各區學校最低錄取標準參考數據。</li>
-            </ul>
-          </div>
-        </div>
-      </InfoModal>
+      />
 
       <InfoModal 
         isOpen={activeModal === 'importantDates'} 
@@ -1082,55 +1135,118 @@ export default function App() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-[300px] border-l-4 border-slate-900 bg-slate-50 shadow-[-8px_0px_0px_0px_rgba(15,23,42,0.1)] z-[110] flex flex-col pt-6 px-6 pb-20 overflow-y-auto"
+              className="fixed top-0 right-0 h-full w-[380px] max-w-full border-l-4 border-slate-900 bg-slate-50 shadow-[-8px_0px_0px_0px_rgba(15,23,42,0.1)] z-[110] flex flex-col overflow-hidden"
             >
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-black text-slate-900">選單</h2>
+              <div className="p-5 bg-amber-400 border-b-4 border-slate-900 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3">
+                  <Menu className="w-6 h-6 text-slate-900" />
+                  <h2 className="text-2xl font-black text-slate-900 tracking-tight">主選單</h2>
+                </div>
                 <button
                   onClick={() => setIsNavMenuOpen(false)}
-                  className="w-10 h-10 bg-white flex items-center justify-center border-2 border-slate-900 rounded-xl hover:bg-slate-100 transition shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:translate-y-1 active:shadow-none"
+                  className="w-10 h-10 bg-white flex items-center justify-center border-4 border-slate-900 rounded-xl hover:bg-slate-100 transition shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] active:translate-y-1 active:shadow-none"
                 >
-                  <X className="w-5 h-5 text-slate-900" />
+                  <X className="w-6 h-6 text-slate-900" />
                 </button>
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm font-black text-slate-400 mb-2 uppercase tracking-wider">資訊與說明</p>
-                {[
-                  { id: 'instructions', icon: Info, label: '使用說明', color: 'text-blue-600', bg: 'bg-blue-100', border: 'border-blue-300' },
-                  { id: 'disclaimer', icon: Shield, label: '免責聲明', color: 'text-amber-600', bg: 'bg-amber-100', border: 'border-amber-300' },
-                  { id: 'importantDates', icon: Map, label: '重要日程', color: 'text-purple-600', bg: 'bg-purple-100', border: 'border-purple-300' },
-                  { id: 'gradeLevel', icon: Award, label: '等級對照表', color: 'text-rose-600', bg: 'bg-rose-100', border: 'border-rose-300' }
-                ].map(btn => (
-                  <button
-                    key={btn.id}
-                    onClick={() => { setActiveModal(btn.id as any); setIsNavMenuOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border-2 ${btn.border} ${btn.bg} focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all active:scale-95`}
-                  >
-                    <btn.icon className={`w-5 h-5 ${btn.color}`} />
-                    <span className="font-bold text-slate-900">{btn.label}</span>
-                  </button>
-                ))}
-              </div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-slate-300"></span>
+                    重要資訊
+                  </h3>
+                  
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={() => { setIsEncyclopediaOpen(true); setIsNavMenuOpen(false); }}
+                      className="w-full text-left p-4 rounded-2xl border-4 border-slate-900 bg-white flex items-center justify-between group active:scale-95 transition-all shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 active:translate-y-0 active:shadow-[0px_0px_0px_0px_rgba(15,23,42,1)]"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-2.5 bg-emerald-100 border-2 border-slate-900 rounded-xl shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] -rotate-3 group-hover:rotate-0 transition-transform">
+                          <BookOpen className="w-6 h-6 text-emerald-600" />
+                        </div>
+                        <span className="font-black text-slate-900 text-lg">職群科系百科</span>
+                      </div>
+                      <ChevronRight className="w-6 h-6 text-slate-400 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                    
+                    {[
+                      { id: 'advantages', icon: Sparkles, label: '系統優點', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+                      { id: 'instructions', icon: Info, label: '使用說明', color: 'text-blue-600', bg: 'bg-blue-100' },
+                      { id: 'disclaimer', icon: Shield, label: '免責聲明', color: 'text-amber-600', bg: 'bg-amber-100' },
+                      { id: 'importantDates', icon: Map, label: '重要日程', color: 'text-purple-600', bg: 'bg-purple-100' },
+                      { id: 'gradeLevel', icon: Award, label: '等級對照表', color: 'text-rose-600', bg: 'bg-rose-100' }
+                    ].map(btn => (
+                      <button
+                        key={btn.id}
+                        onClick={() => { setActiveModal(btn.id as any); setIsNavMenuOpen(false); }}
+                        className="w-full text-left px-4 py-3.5 rounded-2xl border-2 border-slate-900 bg-white flex items-center justify-between group active:scale-95 transition-all hover:bg-slate-100 shadow-sm"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`p-1.5 rounded-lg border-2 border-slate-900 ${btn.bg}`}>
+                            <btn.icon className={`w-5 h-5 ${btn.color}`} />
+                          </div>
+                          <span className="font-bold text-slate-700 text-[15px] group-hover:text-slate-900 group-hover:translate-x-1 transition-transform">{btn.label}</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-900 transition-colors" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-              <div className="mt-8 space-y-3">
-                <p className="text-sm font-black text-slate-400 mb-2 uppercase tracking-wider">外部連結與其他</p>
-                <a href="https://guide.jiooq.com/" target="_blank" rel="noreferrer" className="w-full flex items-center gap-3 px-4 py-3 bg-white border-2 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] transition-all font-bold text-slate-900 text-left">
-                  <Library className="w-5 h-5 text-indigo-600" />
-                  全國錄取分享
-                </a>
-                <a href="https://jiooq.com/%E6%9C%83%E8%80%83%E5%BA%8F%E4%BD%8D" target="_blank" rel="noreferrer" className="w-full flex items-center gap-3 px-4 py-3 bg-white border-2 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] transition-all font-bold text-slate-900 text-left">
-                  <List className="w-5 h-5 text-emerald-600" />
-                  全國序位分享
-                </a>
-                <button onClick={() => { setActiveModal('rating'); setIsNavMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 bg-white border-2 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] transition-all font-bold text-slate-900 text-left">
-                  <StarIcon className="w-5 h-5 text-amber-500" />
-                  評分系統
-                </button>
-                <button onClick={() => { setActiveModal('changelog'); setIsNavMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 bg-white border-2 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] transition-all font-bold text-slate-900 text-left">
-                  <History className="w-5 h-5 text-slate-500" />
-                  更新日誌
-                </button>
+                <div className="space-y-4">
+                  <h3 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-slate-300"></span>
+                    外部資源與其他
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onClick={() => { setActiveModal('rating'); setIsNavMenuOpen(false); }} className="col-span-1 w-full flex flex-col items-start gap-2 p-4 bg-white border-2 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] active:translate-y-0 active:shadow-[0px_0px_0px_0px_rgba(15,23,42,1)] transition-all">
+                      <div className="p-2 bg-amber-100 rounded-lg border-2 border-slate-900">
+                        <StarIcon className="w-5 h-5 text-amber-500" />
+                      </div>
+                      <span className="font-black text-slate-900">評分系統</span>
+                    </button>
+                    <button onClick={() => { setActiveModal('changelog'); setIsNavMenuOpen(false); }} className="col-span-1 w-full flex flex-col items-start gap-2 p-4 bg-white border-2 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] active:translate-y-0 active:shadow-[0px_0px_0px_0px_rgba(15,23,42,1)] transition-all">
+                      <div className="p-2 bg-slate-100 rounded-lg border-2 border-slate-900">
+                        <History className="w-5 h-5 text-slate-500" />
+                      </div>
+                      <span className="font-black text-slate-900">更新日誌</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { href: 'https://cap.rcpet.edu.tw/', icon: Search, label: '會考成績查詢', color: 'text-fuchsia-600', bg: 'bg-fuchsia-100' },
+                      { href: 'https://tyctw.github.io/volunteer/', icon: ChartBar, label: '序位查詢', color: 'text-orange-600', bg: 'bg-orange-100' },
+                      { href: 'https://guide.jiooq.com/', icon: Library, label: '全國錄取分享', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+                      { href: 'https://jiooq.com/%E6%9C%83%E8%80%83%E5%BA%8F%E4%BD%8D', icon: List, label: '全國序位分享', color: 'text-emerald-600', bg: 'bg-emerald-100' }
+                    ].map(link => (
+                       <a 
+                         key={link.label}
+                         href={link.href} 
+                         target="_blank" 
+                         rel="noreferrer" 
+                         className="w-full flex items-center justify-between px-4 py-3.5 bg-white border-2 border-slate-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] active:translate-y-0 active:shadow-[0px_0px_0px_0px_rgba(15,23,42,1)] transition-all group"
+                       >
+                         <div className="flex items-center gap-3">
+                           <div className={`p-1.5 rounded-lg border-2 border-slate-900 ${link.bg}`}>
+                             <link.icon className={`w-4 h-4 ${link.color}`} />
+                           </div>
+                           <span className="font-bold text-slate-900">{link.label}</span>
+                         </div>
+                         <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 -rotate-45 group-hover:rotate-0 transition-transform" />
+                       </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 bg-slate-900 text-center border-t-4 border-slate-900">
+                <p className="text-slate-400 font-bold text-xs flex items-center justify-center gap-1">
+                  <Check className="w-3 h-3 text-emerald-400" />
+                  會考落點分析系統 v1.0
+                </p>
               </div>
             </motion.div>
           </>
